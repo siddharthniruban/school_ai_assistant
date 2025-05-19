@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "4992904430",
+    "project_id": "school-ai-assistant",
+    "storage_bucket": "school-ai-assistant.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4992904430:android:5ecb33d62982403fafd7ff",
+        "android_client_info": {
+          "package_name": "com.example.eduassist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_Wo56RBIZ3ISzen75rvLcBwnXLtCA4Gg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
     final String userRole = appState.userRole;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text('School AI Assistant'),
@@ -20,8 +20,15 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.exit_to_app),
             onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Provider.of<AppState>(context, listen: false).setUser(null, '');
+              // First try Firebase signout, then fallback to app state
+              try {
+                FirebaseAuth.instance.signOut();
+              } catch (e) {
+                print("Firebase sign out failed: $e");
+              } finally {
+                // Always reset app state
+                Provider.of<AppState>(context, listen: false).setUser(null, '');
+              }
             },
           ),
         ],

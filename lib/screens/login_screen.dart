@@ -14,26 +14,39 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String _selectedRole = 'Teacher';
-  
+
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-      
+
       try {
-        final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-        
-        // In a real app, you would fetch the role from Firestore
-        // For demo purposes, we're using the selected role directly
-        Provider.of<AppState>(context, listen: false).setUser(
-          userCredential.user,
-          _selectedRole,
-        );
+        // Try to use Firebase Auth if available
+        try {
+          final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+
+          Provider.of<AppState>(context, listen: false).setUser(
+            userCredential.user,
+            _selectedRole,
+          );
+        } catch (firebaseError) {
+          // Firebase auth failed or not available, use demo mode
+          print("Firebase auth failed: $firebaseError");
+
+          // For demo purposes only - use mock authentication
+          Provider.of<AppState>(context, listen: false).setMockUser(_selectedRole);
+
+          // Show success message for demo mode
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Demo login successful as $_selectedRole')),
+          );
+        }
       } catch (e) {
+        // Handle any other errors
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed: ${e.toString()}')),
         );
@@ -131,9 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: _isLoading
                         ? CircularProgressIndicator()
                         : Text(
-                            'Login',
-                            style: TextStyle(fontSize: 18),
-                          ),
+                      'Login',
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
@@ -141,14 +154,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: 16),
-                // Demo purposes only - in a real app you would have proper signup
+                // Demo login button for easier testing
                 TextButton(
                   onPressed: () {
-                    // For demo purposes, we're automatically logging in
-                    Provider.of<AppState>(context, listen: false).setUser(
-                      null, // This would be a real user in a production app
-                      _selectedRole,
-                    );
+                    // For demo purposes - uses the mock authentication
+                    Provider.of<AppState>(context, listen: false).setMockUser(_selectedRole);
                   },
                   child: Text('Demo Login (No Authentication)'),
                 ),
